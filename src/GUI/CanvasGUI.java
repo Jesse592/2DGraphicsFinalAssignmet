@@ -1,28 +1,29 @@
 package GUI;
 
 import Logic.FieldGrid;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
-public class Canvas {
+public class CanvasGUI {
 
     private ResizableCanvas canvas;
-    private Pane mainPane;
+    private BorderPane mainPane;
 
     private FieldGrid fieldGrid;
 
-    public Canvas() {
+    public CanvasGUI() {
         this(new FieldGrid(0,0), 1920/4, 1080/2);
     }
 
-    public Canvas(int width, int height) {
+    public CanvasGUI(int width, int height) {
         this(new FieldGrid(0,0), width, height);
     }
 
-    public Canvas(FieldGrid fieldGrid, int width, int height) {
+    public CanvasGUI(FieldGrid fieldGrid, int width, int height) {
         this.fieldGrid = fieldGrid;
-        this.mainPane = new Pane();
+        this.mainPane = new BorderPane();
 
         init();
 
@@ -31,14 +32,20 @@ public class Canvas {
 
     }
 
-    public void init(){
+    private void init(){
+
         this.canvas = new ResizableCanvas(this::draw, this.mainPane);
-        this.mainPane.getChildren().add(this.canvas);
+        this.mainPane.setCenter(this.canvas);
+
     }
 
-    private void draw(FXGraphics2D fxGraphics2D) {
+
+    private void draw(FXGraphics2D g2d) {
+        this.fieldGrid.draw(g2d);
     }
 
-
+    public BorderPane getMainPane() {
+        return mainPane;
+    }
 }
  

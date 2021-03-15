@@ -7,12 +7,15 @@ import java.awt.geom.Point2D;
 import java.awt.color.*;
 import java.awt.geom.Rectangle2D;
 
+enum DebugState {NONE, HEAT, VECTOR};
+
 public class FieldTile {
 
     private int heat;
     private Point2D vector;
     private Point2D centre;
     private Point2D index;
+    private DebugState debug;
     private boolean transversable;
 
     private int width;
@@ -21,6 +24,8 @@ public class FieldTile {
     public FieldTile(Point2D centre, int width, int height, int indexX, int indexY) {
         this.centre = centre;
         this.index = new Point2D.Double(indexX, indexY);
+
+        this.debug = DebugState.HEAT;
 
         this.heat = -1;
 
@@ -63,12 +68,22 @@ public class FieldTile {
         return index;
     }
 
+    public void setDebug(DebugState debug) {
+        this.debug = debug;
+    }
+
+    public void heatDraw(FXGraphics2D g2d) {
+
+        g2d.drawString(this.heat + "", (float) this.centre.getX(), (float) this.centre.getY());
+    }
+
+
     public void draw(FXGraphics2D g2d) {
 
         if (!this.isTransversable()) {
             g2d.setColor(Color.black);
         } else {
-            g2d.setColor(Color.getHSBColor(this.heat*2/360f, 1f,  1f));
+            g2d.setColor(Color.getHSBColor(this.heat * 2 / 360f, 1f, 1f));
         }
 
         g2d.fill(new Rectangle2D.Double(
@@ -78,7 +93,10 @@ public class FieldTile {
                 this.height));
 
         g2d.setColor(Color.black);
-        g2d.drawString(this.heat + "", (float) this.centre.getX(), (float) this.centre.getY());
+
+        if (this.debug == DebugState.HEAT)
+            heatDraw(g2d);
+
     }
 
 }

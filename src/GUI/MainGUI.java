@@ -2,6 +2,7 @@ package GUI;
 
 import Logic.FieldGrid;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -11,20 +12,30 @@ public class MainGUI extends Application {
 
     private BorderPane mainPane;
     private CanvasGUI canvasGUI;
+    private BuildPanel buildPanel;
 
     private FieldGrid fieldGrid;
 
     @Override
     public void start(Stage stage) throws Exception {
+
+
+        this.mainPane.setCenter(this.canvasGUI.getMainPane());
+        this.mainPane.setRight(this.buildPanel.getMainPane());
+
+        stage.setScene(new Scene(mainPane));
+        stage.show();
+    }
+
+    public void init() {
         this.mainPane = new BorderPane();
         this.fieldGrid = new FieldGrid(50,30, 40, 40);
 
         this.canvasGUI = new CanvasGUI(this.fieldGrid, 50*40, 30*40);
+        this.buildPanel = new BuildPanel(this.fieldGrid);
 
-        this.mainPane.setCenter(this.canvasGUI.getMainPane());
+        this.mainPane.setPadding(new Insets(5,5,5,5));
 
-        stage.setScene(new Scene(mainPane));
-        stage.show();
     }
 
 

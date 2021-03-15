@@ -138,6 +138,8 @@ public class FieldGrid {
                 if (tile.isTransversable()) {
                     Point2D vector = calculateVector(y, x, tile);
                     tile.setVector(vector);
+                } else {
+                    tile.setVector(null);
                 }
 
             }

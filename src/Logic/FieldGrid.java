@@ -125,7 +125,7 @@ public class FieldGrid {
             for (int x = 1, tilesYLength = tilesY.length - 1; x < tilesYLength; x++) {
                 FieldTile tile = tilesY[x];
 
-                if (tile.isTransversable() && tile.getHeat() > 0) {
+                if (tile.isTransversable()) {
                     Point2D vector = calculateVector(y, x, tile);
                     tile.setVector(vector);
                 }
@@ -168,8 +168,11 @@ public class FieldGrid {
 
         //creating the vector and normalizing it
         double vectorLength = Math.sqrt(vectorX*vectorX + vectorY*vectorY);
-        Point2D vector = new Point2D.Double(vectorX / vectorLength, vectorY / vectorLength);
-        return vector;
+        if (vectorLength != 0)
+            return new Point2D.Double(vectorX / vectorLength, vectorY / vectorLength);
+        else
+            return new Point2D.Double(0,0);
+
     }
 
     public void draw(FXGraphics2D g2d) {

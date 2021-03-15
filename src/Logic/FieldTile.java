@@ -3,6 +3,7 @@ package Logic;
 import org.jfree.fx.FXGraphics2D;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.color.*;
 import java.awt.geom.Rectangle2D;
@@ -94,6 +95,12 @@ public class FieldTile {
                 g2d.drawString(this.heat + "", (float) this.centre.getX(), (float) this.centre.getY());
                 break;
             case VECTOR:
+                g2d.fill(new Ellipse2D.Double(
+                        this.centre.getX() - this.width / 20f,
+                        this.centre.getY() - this.height / 20f,
+                        this.width / 10f,
+                        this.height / 10f
+                ));
                 g2d.drawLine((int)centre.getX(),
                         (int)centre.getY(),
                         (int)(centre.getX() + vector.getX() * this.width / 2f),

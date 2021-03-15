@@ -17,9 +17,9 @@ public class MainGUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.mainPane = new BorderPane();
-        this.fieldGrid = new FieldGrid(100,30, 40, 40);
+        this.fieldGrid = new FieldGrid(50,30, 40, 40);
 
-        this.canvasGUI = new CanvasGUI(this.fieldGrid, 20*50+10, 20*50);
+        this.canvasGUI = new CanvasGUI(this.fieldGrid, 50*40, 30*40);
 
         this.mainPane.setCenter(this.canvasGUI.getMainPane());
 

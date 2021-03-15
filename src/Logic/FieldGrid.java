@@ -67,7 +67,6 @@ public class FieldGrid {
         }
     }
 
-    //Todo: implement method
     public boolean generateHeatMap(FieldTile startPoint) {
         clearField();
 

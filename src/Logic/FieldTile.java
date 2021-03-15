@@ -90,6 +90,7 @@ public class FieldTile {
 
         g2d.setColor(Color.black);
 
+
         switch (this.debug) {
             case HEAT:
                 g2d.drawString(this.heat + "", (float) this.centre.getX(), (float) this.centre.getY());
@@ -101,6 +102,7 @@ public class FieldTile {
                         this.width / 10f,
                         this.height / 10f
                 ));
+
                 g2d.drawLine((int)centre.getX(),
                         (int)centre.getY(),
                         (int)(centre.getX() + vector.getX() * this.width / 2f),

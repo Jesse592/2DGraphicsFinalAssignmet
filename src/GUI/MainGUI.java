@@ -31,8 +31,8 @@ public class MainGUI extends Application {
         this.mainPane = new BorderPane();
         this.fieldGrid = new FieldGrid(50,30, 40, 40);
 
-        this.canvasGUI = new CanvasGUI(this.fieldGrid, 50*40, 30*40);
-        this.buildPanel = new BuildPanel(this.fieldGrid);
+        this.canvasGUI = new CanvasGUI(this.fieldGrid);
+        this.buildPanel = new BuildPanel(this.fieldGrid, this.canvasGUI);
 
         this.mainPane.setPadding(new Insets(5,5,5,5));
 

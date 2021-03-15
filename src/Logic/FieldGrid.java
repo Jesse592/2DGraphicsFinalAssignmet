@@ -30,6 +30,11 @@ public class FieldGrid {
         this.tiles = generateTiles();
     }
 
+    public void reBuild(){
+        this.tiles = generateTiles();
+        clearField();
+    }
+
     private FieldTile[][] generateTiles() {
         FieldTile[][] tiles = new FieldTile[this.height][this.width];
 

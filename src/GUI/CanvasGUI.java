@@ -2,6 +2,7 @@ package GUI;
 
 import Logic.FieldGrid;
 import Logic.FieldTile;
+import javafx.scene.Camera;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -23,8 +24,8 @@ public class CanvasGUI {
         this(new FieldGrid(0, 0), 1920 / 4, 1080 / 2);
     }
 
-    public CanvasGUI(int width, int height) {
-        this(new FieldGrid(0, 0), width, height);
+    public CanvasGUI(FieldGrid fieldGrid) {
+        this(fieldGrid, fieldGrid.getWidth() * fieldGrid.getTileWidth(), fieldGrid.getHeight() * fieldGrid.getTileHeight());
     }
 
     public CanvasGUI(FieldGrid fieldGrid, int width, int height) {
@@ -44,6 +45,7 @@ public class CanvasGUI {
         this.mainPane.setCenter(this.canvas);
 
         this.canvas.setOnMouseClicked(this::onMouseClicked);
+        this.canvas.setOnMouseDragged(this::onMouseClicked);
     }
 
     private void onMouseClicked(MouseEvent e) {
@@ -62,6 +64,9 @@ public class CanvasGUI {
         draw(new FXGraphics2D(this.canvas.getGraphicsContext2D()));
     }
 
+    public void draw(){
+        draw(new FXGraphics2D(this.canvas.getGraphicsContext2D()));
+    }
 
     private void draw(FXGraphics2D g2d) {
         g2d.setTransform(new AffineTransform());

@@ -17,6 +17,8 @@ public class FieldGrid {
 
     private FieldTile[][] tiles;
 
+    private FieldTile selectedTile;
+
     public FieldGrid(int width, int height) {
         this(width, height, 25, 25);
     }
@@ -27,6 +29,7 @@ public class FieldGrid {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
 
+        this.selectedTile = null;
         this.tiles = generateTiles();
     }
 
@@ -79,7 +82,9 @@ public class FieldGrid {
         }
     }
 
+    public void generateHeatMap() {generateHeatMap(this.selectedTile);}
     public void generateHeatMap(FieldTile startPoint) {
+        this.selectedTile = startPoint;
         clearField();
 
         int heat = startPoint.getHeat() + 1;
@@ -184,6 +189,14 @@ public class FieldGrid {
         for (FieldTile[] tileYs : this.tiles) {
             for (FieldTile tile : tileYs) {
                 tile.draw(g2d);
+            }
+        }
+    }
+
+    public void setDebugState(DebugState debugState) {
+        for (FieldTile[] tilesY : this.tiles) {
+            for (FieldTile tile : tilesY) {
+                tile.setDebug(debugState);
             }
         }
     }

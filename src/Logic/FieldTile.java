@@ -8,7 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.color.*;
 import java.awt.geom.Rectangle2D;
 
-enum DebugState {NONE, HEAT, VECTOR};
+;
 
 public class FieldTile {
 
@@ -26,7 +26,7 @@ public class FieldTile {
         this.centre = centre;
         this.index = new Point2D.Double(indexX, indexY);
 
-        this.debug = DebugState.VECTOR;
+        this.debug = DebugState.NONE;
 
         this.heat = -1;
 

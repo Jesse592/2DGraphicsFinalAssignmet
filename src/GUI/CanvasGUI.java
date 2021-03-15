@@ -57,6 +57,8 @@ public class CanvasGUI {
                 this.fieldGrid.generateVectorField();
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 selectedTile.setTransversable(false);
+                this.fieldGrid.generateHeatMap();
+                this.fieldGrid.generateVectorField();
             }
         }
 

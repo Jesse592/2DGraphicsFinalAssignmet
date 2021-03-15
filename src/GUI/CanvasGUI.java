@@ -5,7 +5,6 @@ import Logic.FieldTile;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
@@ -53,6 +52,7 @@ public class CanvasGUI {
         if (selectedTile != null) {
             if (e.getButton() == MouseButton.PRIMARY) {
                 this.fieldGrid.generateHeatMap(selectedTile);
+                this.fieldGrid.generateVectorField();
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 selectedTile.setTransversable(false);
             }

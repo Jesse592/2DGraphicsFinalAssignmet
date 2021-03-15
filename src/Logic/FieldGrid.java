@@ -1,10 +1,11 @@
 package Logic;
 
+import org.jetbrains.annotations.NotNull;
 import org.jfree.fx.FXGraphics2D;
 
 import java.awt.geom.Point2D;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class FieldGrid {
 
@@ -34,7 +35,7 @@ public class FieldGrid {
 
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                tiles[y][x] = new FieldTile(
+                FieldTile tile = new FieldTile(
                         new Point2D.Double(
                                 (this.tileWidth * x) + (this.tileWidth / 2f),
                                 (this.tileHeight * y) + (this.tileHeight / 2f)),
@@ -42,6 +43,12 @@ public class FieldGrid {
                         this.tileHeight,
                         x,
                         y);
+
+                if (y == 0 || y == this.height-1 || x == 0 || x == this.width-1) {
+                    tile.setTransversable(false);
+                }
+
+                tiles[y][x] = tile;
             }
         }
 
@@ -67,14 +74,14 @@ public class FieldGrid {
         }
     }
 
-    public boolean generateHeatMap(FieldTile startPoint) {
+    public void generateHeatMap(FieldTile startPoint) {
         clearField();
 
         int heat = startPoint.getHeat() + 1;
         startPoint.setHeat(heat);
         ArrayList<FieldTile> nextTiles = new ArrayList<>();
 
-        getNeighbours(startPoint, nextTiles);
+        setNeighbours(startPoint, nextTiles);
 
         ArrayList<FieldTile> newTiles = new ArrayList();
         do {
@@ -84,7 +91,7 @@ public class FieldGrid {
                 if (fieldTile.getHeat() == -1 && fieldTile.isTransversable()) {
                     fieldTile.setHeat(heat);
 
-                    getNeighbours(fieldTile, newTiles);
+                    setNeighbours(fieldTile, newTiles);
                 }
             }
 
@@ -92,10 +99,9 @@ public class FieldGrid {
             newTiles.clear();
         } while(!nextTiles.isEmpty());
 
-        return true;
     }
 
-    private void getNeighbours(FieldTile startPoint, ArrayList<FieldTile> nextTiles) {
+    private void setNeighbours(FieldTile startPoint, ArrayList<FieldTile> nextTiles) {
         int indexYStart = (int) startPoint.getIndex().getY();
         int indexXStart = (int) startPoint.getIndex().getX();
 
@@ -109,9 +115,61 @@ public class FieldGrid {
             nextTiles.add(this.tiles[indexYStart][indexXStart + 1]);
     }
 
-    //Todo: implement method
-    private boolean generateVectorFiled() {
-        return true;
+    public void generateVectorField()
+    {
+
+        FieldTile[][] fieldTiles = this.tiles;
+        for (int y = 1, fieldTilesLength = fieldTiles.length - 1; y < fieldTilesLength; y++) {
+            FieldTile[] tilesY = fieldTiles[y];
+
+            for (int x = 1, tilesYLength = tilesY.length - 1; x < tilesYLength; x++) {
+                FieldTile tile = tilesY[x];
+
+                if (tile.isTransversable() && tile.getHeat() > 0) {
+                    Point2D vector = calculateVector(y, x, tile);
+                    tile.setVector(vector);
+                }
+
+            }
+
+        }
+
+    }
+
+    @NotNull
+    private Point2D calculateVector(int y, int x, FieldTile tile) {
+        int vectorX;
+        int vectorY;
+
+        FieldTile upTile = this.tiles[y -1][x];
+        FieldTile downTile = this.tiles[y +1][x];
+        FieldTile leftTile = this.tiles[y][x -1];
+        FieldTile rightTile = this.tiles[y][x +1];
+
+        if(leftTile.isTransversable() && leftTile.getHeat() != -1)
+            vectorX = leftTile.getHeat();
+        else
+            vectorX = tile.getHeat();
+
+        if(rightTile.isTransversable() && rightTile.getHeat() != -1)
+            vectorX -= rightTile.getHeat();
+        else
+            vectorX -= tile.getHeat();
+
+        if(upTile.isTransversable() && upTile.getHeat() != -1)
+            vectorY = upTile.getHeat();
+        else
+            vectorY = tile.getHeat();
+
+        if(downTile.isTransversable() && downTile.getHeat() != -1)
+            vectorY -= downTile.getHeat();
+        else
+            vectorY -= tile.getHeat();
+
+        //creating the vector and normalizing it
+        double vectorLength = Math.sqrt(vectorX*vectorX + vectorY*vectorY);
+        Point2D vector = new Point2D.Double(vectorX / vectorLength, vectorY / vectorLength);
+        return vector;
     }
 
     public void draw(FXGraphics2D g2d) {

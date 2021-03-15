@@ -25,7 +25,7 @@ public class FieldTile {
         this.centre = centre;
         this.index = new Point2D.Double(indexX, indexY);
 
-        this.debug = DebugState.HEAT;
+        this.debug = DebugState.VECTOR;
 
         this.heat = -1;
 
@@ -72,11 +72,6 @@ public class FieldTile {
         this.debug = debug;
     }
 
-    public void heatDraw(FXGraphics2D g2d) {
-
-        g2d.drawString(this.heat + "", (float) this.centre.getX(), (float) this.centre.getY());
-    }
-
 
     public void draw(FXGraphics2D g2d) {
 
@@ -94,8 +89,18 @@ public class FieldTile {
 
         g2d.setColor(Color.black);
 
-        if (this.debug == DebugState.HEAT)
-            heatDraw(g2d);
+        switch (this.debug) {
+            case HEAT:
+                g2d.drawString(this.heat + "", (float) this.centre.getX(), (float) this.centre.getY());
+                break;
+            case VECTOR:
+                g2d.drawLine((int)centre.getX(),
+                        (int)centre.getY(),
+                        (int)(centre.getX() + vector.getX() * this.width / 2f),
+                        (int)(centre.getY() + vector.getY() * this.height / 2f)
+                );
+        }
+
 
     }
 

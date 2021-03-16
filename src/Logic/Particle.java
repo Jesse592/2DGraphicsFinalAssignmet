@@ -77,25 +77,16 @@ public class Particle {
     }
 
     public void update(double deltaTime) {
-        boolean curCollision = false;
-        if(this.collision) {
-            curCollision = checkCollision();
-        }
 
-        if (!curCollision) {
+        FieldTile locationTile = this.fieldGrid.getAtPoint(this.posistion);
+        if (!checkCollision(locationTile)) {
             this.posistion = new Point2D.Double(
                     this.posistion.getX() + (this.speed.getX() * deltaTime),
                     this.posistion.getY() + (this.speed.getY() * deltaTime)
             );
 
-            FieldTile locationTile = this.fieldGrid.getAtPoint(this.posistion);
-            if (locationTile != null && locationTile.getVector() != null) {
-                Point2D vector = this.fieldGrid.getAtPoint(this.posistion).getVector();
+                Point2D vector = locationTile.getVector();
                 this.speed = new Point2D.Double(vector.getX() * this.targetSpeed, vector.getY() * this.targetSpeed);
-            } else {
-                collision(deltaTime);
-            }
-
         } else {
             collision(deltaTime);
         }
@@ -103,12 +94,16 @@ public class Particle {
 
     private void collision(double deltaTime) {
         this.posistion = new Point2D.Double(
-                this.posistion.getX() + (Math.random() * 250 * deltaTime),
-                this.posistion.getY() + (Math.random() * 250 * deltaTime)
+                this.posistion.getX() + ((Math.random() * 250 - 125) * deltaTime),
+                this.posistion.getY() - ((Math.random() * 250 - 125) * deltaTime)
         );
     }
 
-    private boolean checkCollision() {
+    private boolean checkCollision(FieldTile locationTile) {
+        if (locationTile == null || locationTile.getVector() == null) {
+            return true;
+        }
+
         for (Particle otherParticle : this.otherParticles) {
             if (this.posistion.distanceSq(otherParticle.posistion) < this.width) {
                 return true;

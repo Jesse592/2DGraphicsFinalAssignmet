@@ -54,7 +54,10 @@ public class FieldTile {
     }
 
     public Point2D getVector() {
-        return vector;
+        if (vector != null) {
+            return vector;
+        }
+        return null;
     }
 
     public void setVector(Point2D vector) {
@@ -74,12 +77,13 @@ public class FieldTile {
     }
 
 
+
     public void draw(FXGraphics2D g2d) {
 
         if (!this.isTransversable()) {
             g2d.setColor(Color.black);
         } else {
-            g2d.setColor(Color.getHSBColor(this.heat * 2 / 360f, 1f, 1f));
+            g2d.setColor(Color.getHSBColor(this.heat / 360f, 1f, 1f));
         }
 
         g2d.fill(new Rectangle2D.Double(
@@ -103,11 +107,13 @@ public class FieldTile {
                         this.height / 10f
                 ));
 
-                g2d.drawLine((int)centre.getX(),
-                        (int)centre.getY(),
-                        (int)(centre.getX() + vector.getX() * this.width / 2f),
-                        (int)(centre.getY() + vector.getY() * this.height / 2f)
-                );
+                if (this.vector != null) {
+                    g2d.drawLine((int) centre.getX(),
+                            (int) centre.getY(),
+                            (int) (centre.getX() + vector.getX() * this.width / 2f),
+                            (int) (centre.getY() + vector.getY() * this.height / 2f)
+                    );
+                }
         }
 
 

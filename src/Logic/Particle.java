@@ -7,96 +7,127 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
 public class Particle {
 
     private FieldGrid fieldGrid;
 
-    private Point2D posistion;
-    private Point2D speed;
-    private boolean collision;
-    private ArrayList<Particle> otherParticles;
-
-    private int width;
-    private int height;
-
+    private Point2D position;
+    private Point2D direction;
+    private Point2D actualSpeed;
 
     private int targetSpeed;
-    private Paint color;
+    private int acceleration;
+
+    private ArrayList<Particle> otherParticles;
+
+    private int radius;
+
+    private double opacity;
+    private Color color;
     private BufferedImage image;
 
     public Particle(FieldGrid fieldGrid) {
-        this(fieldGrid, 10, 10);
+        this(fieldGrid, 3);
     }
 
-    public Particle(FieldGrid fieldGrid, int width, int height) {
-        this(fieldGrid, new Point2D.Double(100, 100), width, height);
+    public Particle(FieldGrid fieldGrid, int radius) {
+        this(fieldGrid, new Point2D.Double(100, 100), radius);
     }
 
-    public Particle(FieldGrid fieldGrid, Point2D posistion, int width, int height) {
-        this(fieldGrid, posistion, width, height, 250);
+    public Particle(FieldGrid fieldGrid, Point2D position, int radius) {
+        this(fieldGrid, position, radius, 250);
     }
 
-    public Particle(FieldGrid fieldGrid, Point2D posistion, int width, int height, int targetSpeed) {
-        this(fieldGrid, posistion, true, width, height, targetSpeed, Color.BLACK);
+    public Particle(FieldGrid fieldGrid, Point2D position, int radius, int targetSpeed) {
+        this(fieldGrid, position, radius, targetSpeed, Color.BLACK);
     }
 
-    public Particle(FieldGrid fieldGrid, Point2D posistion, boolean collision, int width, int height, int targetSpeed, Paint color) {
+    public Particle(FieldGrid fieldGrid, Point2D posistion, int radius, int targetSpeed, Color color) {
         this.fieldGrid = fieldGrid;
 
-        this.posistion = posistion;
-        this.collision = collision;
-        this.width = width;
-        this.height = height;
+        this.position = posistion;
+        this.radius = radius;
+
         this.targetSpeed = targetSpeed;
-        this.color = color;
+        this.actualSpeed = new Point2D.Double(0,0);
+        this.acceleration = 5;
 
         this.otherParticles = new ArrayList<>();
 
-        Point2D vector = this.fieldGrid.getAtPoint(this.posistion).getVector();
-        this.speed = new Point2D.Double(vector.getX() * this.targetSpeed, vector.getY() * this.targetSpeed);
+        this.opacity = 1;
+        this.color = color;
+
+        Point2D vector = this.fieldGrid.getAtPoint(this.position).getVector();
+        if (vector != null) {
+            this.direction = new Point2D.Double(vector.getX() * this.targetSpeed, vector.getY() * this.targetSpeed);
+        } else {
+            this.direction = new Point2D.Double(0, 0);
+        }
         this.image = null;
     }
 
     public void draw(FXGraphics2D g2d) {
-        Shape shape = new Ellipse2D.Double(this.posistion.getX() - this.width / 2f, this.posistion.getY() - this.height / 2f, this.width, this.height);
+        Shape shape = new Ellipse2D.Double(this.position.getX() - this.radius, this.position.getY() - this.radius, this.radius * 2f, this.radius * 2f);
 
         g2d.setPaint(this.color);
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) this.opacity));
         g2d.fill(shape);
 
-        g2d.setColor(Color.black);
-        g2d.draw(shape);
 
         if (this.image != null) {
             AffineTransform tx = new AffineTransform();
-            tx.translate(this.width, this.height);
+            tx.translate(this.radius * 2, this.radius * 2);
             g2d.drawImage(this.image, tx, null);
         }
 
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+
     }
+
+    private FieldTile currentTile;
+    private FieldTile oldTile;
+    private Point2D oldPosition;
 
     public void update(double deltaTime) {
 
-        FieldTile locationTile = this.fieldGrid.getAtPoint(this.posistion);
-        if (!checkCollision(locationTile)) {
-            this.posistion = new Point2D.Double(
-                    this.posistion.getX() + (this.speed.getX() * deltaTime),
-                    this.posistion.getY() + (this.speed.getY() * deltaTime)
+        this.oldTile = this.currentTile;
+        this.currentTile = this.fieldGrid.getAtPoint(this.position);
+
+        boolean collision = checkCollision(this.currentTile) && false;
+        //noinspection ConstantConditions
+        if (!collision && (this.currentTile != null)) {
+            Point2D vector = this.currentTile.getVector();
+
+            //Checking if the pace is legal
+            if (vector != null) {
+                this.direction = new Point2D.Double(vector.getX() * this.targetSpeed, vector.getY() * this.targetSpeed);
+
+                //Accelerating
+                handleAcceleration();
+            } else {
+                blockCollision();
+            }
+
+
+
+
+            //Setting te position
+            this.oldPosition = this.position;
+            this.position = new Point2D.Double(
+                    this.position.getX() + (actualSpeed.getX() * deltaTime),
+                    this.position.getY() + (actualSpeed.getY() * deltaTime)
             );
 
-                Point2D vector = locationTile.getVector();
-                this.speed = new Point2D.Double(vector.getX() * this.targetSpeed, vector.getY() * this.targetSpeed);
-        } else {
-            collision(deltaTime);
         }
     }
 
-    private void collision(double deltaTime) {
-        this.posistion = new Point2D.Double(
-                this.posistion.getX() + ((Math.random() * 250 - 125) * deltaTime),
-                this.posistion.getY() - ((Math.random() * 250 - 125) * deltaTime)
-        );
+    private void blockCollision() {
+        if(!this.currentTile.equals(this.oldTile)) {
+               
+        }
     }
 
     private boolean checkCollision(FieldTile locationTile) {
@@ -105,79 +136,54 @@ public class Particle {
         }
 
         for (Particle otherParticle : this.otherParticles) {
-            if (this.posistion.distanceSq(otherParticle.posistion) < this.width) {
+            if (this.position.distanceSq(otherParticle.position) < this.radius * 2 * this.radius) {
                 return true;
             }
         }
         return false;
     }
 
-    public Point2D getPosistion() {
-        return posistion;
+
+    private void handleAcceleration() {
+        if (this.direction.getX() < this.actualSpeed.getX()) {
+            this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() - this.acceleration, this.actualSpeed.getY());
+        } else if (this.direction.getX() > this.actualSpeed.getX()) {
+            this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + this.acceleration, this.actualSpeed.getY());
+        }
+
+        if (this.direction.getY() < this.actualSpeed.getY()) {
+            this.actualSpeed = new Point2D.Double(this.actualSpeed.getX(), this.actualSpeed.getY() - this.acceleration);
+        } else if (this.direction.getY() > this.actualSpeed.getY()) {
+            this.actualSpeed = new Point2D.Double(this.actualSpeed.getX(), this.actualSpeed.getY() + this.acceleration);
+        }
     }
 
-    public void setPosistion(Point2D posistion) {
-        this.posistion = posistion;
+    public void setOtherParticles(ArrayList<Particle> otherParticles) {
+        this.otherParticles = otherParticles;
+        this.otherParticles.remove(this);
     }
 
-    public Point2D getSpeed() {
-        return speed;
+    public void setAcceleration(int acceleration) {
+        this.acceleration = acceleration;
     }
 
-    public void setSpeed(Point2D speed) {
-        this.speed = speed;
-    }
-
-    public boolean isCollision() {
-        return collision;
-    }
-
-    public void setCollision(boolean collision) {
-        this.collision = collision;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public int getTargetSpeed() {
-        return targetSpeed;
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
     public void setTargetSpeed(int targetSpeed) {
         this.targetSpeed = targetSpeed;
     }
 
-    public Paint getColor() {
-        return color;
+    public void setOpacity(double opacity) {
+        this.opacity = opacity;
     }
 
-    public void setColor(Paint color) {
+    public void setColor(Color color) {
         this.color = color;
-    }
-
-    public BufferedImage getImage() {
-        return image;
     }
 
     public void setImage(BufferedImage image) {
         this.image = image;
-    }
-
-    public void setOtherParticles(ArrayList<Particle> otherParticles) {
-        this.otherParticles = otherParticles;
-        this.otherParticles.remove(this);
     }
 }

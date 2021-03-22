@@ -67,7 +67,7 @@ public class FieldGrid {
         int indexY = (int) (location.getY() / this.tileHeight);
         int indexX = (int) (location.getX() / this.tileWidth);
 
-        if (this.tiles.length > indexY && this.tiles[indexY].length > indexX) {
+        if (this.tiles.length > indexY && indexY > 0 && this.tiles[indexY].length > indexX && indexX > 0) {
             return this.tiles[indexY][indexX];
         }
 
@@ -82,7 +82,12 @@ public class FieldGrid {
         }
     }
 
-    public void generateHeatMap() {generateHeatMap(this.selectedTile);}
+    public void generateHeatMap() {
+        if (this.selectedTile != null) {
+            generateHeatMap(this.selectedTile);
+        }
+    }
+
     public void generateHeatMap(FieldTile startPoint) {
         this.selectedTile = startPoint;
         clearField();

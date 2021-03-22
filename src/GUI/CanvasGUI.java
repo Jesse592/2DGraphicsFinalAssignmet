@@ -21,7 +21,7 @@ public class CanvasGUI {
     private ResizableCanvas canvas;
     private BorderPane mainPane;
 
-    private ArrayList<Particle> particles = new ArrayList<>();
+    private ParticleManager particleManager;
 
     private FieldGrid fieldGrid;
 
@@ -55,21 +55,13 @@ public class CanvasGUI {
                 draw(g2d);
             }
         }.start();
-
-        for (int i = 0; i < 100; i++) {
-            Particle particle = new Particle(this.fieldGrid, new Point2D.Double(Math.random()*500+100, Math.random()*500+100), 30,30);
-            this.particles.add(particle);
-        }
-
-        for (Particle particle : this.particles) {
-            particle.setOtherParticles(new ArrayList<>(this.particles));
-        }
     }
 
     private void init() {
 
         this.canvas = new ResizableCanvas(this::draw, this.mainPane);
         this.mainPane.setCenter(this.canvas);
+        this.particleManager = new ParticleManager(this.fieldGrid, 100);
 
         this.canvas.setOnMouseClicked(this::onMouseClicked);
         this.canvas.setOnMouseDragged(this::onMouseClicked);
@@ -104,19 +96,19 @@ public class CanvasGUI {
 
         this.fieldGrid.draw(g2d);
 
-        for (Particle particle : this.particles) {
-            particle.draw(g2d);
-        }
+        this.particleManager.draw(g2d);
     }
 
     private void update(double deltaTime) {
-        for (Particle particle : this.particles) {
-            particle.update(deltaTime);
-        }
+        this.particleManager.update(deltaTime);
     }
 
     public BorderPane getMainPane() {
         return mainPane;
+    }
+
+    public ParticleManager getParticleManager(){
+        return this.particleManager;
     }
 }
  

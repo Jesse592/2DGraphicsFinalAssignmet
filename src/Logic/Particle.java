@@ -130,30 +130,39 @@ public class Particle {
         double xShift = 0;
         double yShift = 0;
 
-        //Collision with up side of tile
-        if (xDirection > 0) {
-            yShift = -this.radius;
-        } else {
-            yShift = this.radius;
-        }
+        if (!this.currentTile.getCentre().equals(this.oldTile.getCentre())) {
+            //Collision with right / left side of tile
+            if (xDirection < 0) {
+                //Right side
+                double penetrationDistance = (this.currentTile.getCentre().getX() + (this.fieldGrid.getTileWidth() / 2f)) - this.position.getX();
+                xShift = penetrationDistance + 0.1;
+                this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() + (this.targetSpeed / 20f));
+            } else if (xDirection > 0) {
+                //Left side
+                double penetrationDistance = this.position.getX() - (this.currentTile.getCentre().getX() - (this.fieldGrid.getTileWidth() / 2f));
+                xShift = -(penetrationDistance + 0.1);
+                this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() + (this.targetSpeed / 20f));
+            }
 
-        if (yDirection > 0) {
-            xShift = this.radius;
-        } else {
-            xShift = -this.radius;
-        }
+            //Collision with up / down side of tile
+            if (yDirection > 0) {
+                //Up side
+                double penetrationDistance = this.position.getY() - (this.currentTile.getCentre().getY() - (this.fieldGrid.getTileHeight() / 2f));
+                yShift = -(penetrationDistance + 0.1);
+                this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + (this.targetSpeed / 20f), 0);
+            } else if (yDirection < 0){
+                //Down Side
+                double penetrationDistance = (this.currentTile.getCentre().getY() + (this.fieldGrid.getTileHeight() / 2f)) - this.position.getY();
+                yShift = penetrationDistance + 0.1;
+                this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + (this.targetSpeed / 20f), 0);
+            }
 
-        if (xShift != 0) {
-            this.actualSpeed = new Point2D.Double(this.actualSpeed.getX(), 0);
-        }
-        if (yShift != 0) {
-            this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY());
-        }
 
-        this.position = new Point2D.Double(
-                this.position.getX() + xShift,
-                this.position.getY() + yShift
-        );
+            this.position = new Point2D.Double(
+                    this.position.getX() + xShift,
+                    this.position.getY() + yShift
+            );
+        }
     }
 
     private boolean checkCollision(FieldTile locationTile) {

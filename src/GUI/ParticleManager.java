@@ -32,11 +32,11 @@ public class ParticleManager {
         this.fieldGrid = fieldGrid;
         this.particles = new ArrayList<>();
 
-        this.radius = 5;
-        this.opacity = 80;
+        this.radius = 10;
+        this.opacity = 0.6;
 
         this.minSpeed = 150;
-        this.maxSpeed = 500;
+        this.maxSpeed = 300;
         this.minAcceleration = 7;
         this.maxAcceleration = 10;
 

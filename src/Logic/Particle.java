@@ -52,7 +52,7 @@ public class Particle {
         this.radius = radius;
 
         this.targetSpeed = targetSpeed;
-        this.actualSpeed = new Point2D.Double(0,0);
+        this.actualSpeed = new Point2D.Double(0, 0);
         this.acceleration = 5;
 
         this.otherParticles = new ArrayList<>();
@@ -112,8 +112,6 @@ public class Particle {
             }
 
 
-
-
             //Setting te position
             this.oldPosition = this.position;
             this.position = new Point2D.Double(
@@ -125,9 +123,37 @@ public class Particle {
     }
 
     private void blockCollision() {
-        if(!this.currentTile.equals(this.oldTile)) {
-               
+
+        double xDirection = this.currentTile.getCentre().getX() - this.oldTile.getCentre().getX();
+        double yDirection = this.currentTile.getCentre().getY() - this.oldTile.getCentre().getY();
+
+        double xShift = 0;
+        double yShift = 0;
+
+        //Collision with up side of tile
+        if (xDirection > 0) {
+            yShift = -this.radius;
+        } else {
+            yShift = this.radius;
         }
+
+        if (yDirection > 0) {
+            xShift = this.radius;
+        } else {
+            xShift = -this.radius;
+        }
+
+        if (xShift != 0) {
+            this.actualSpeed = new Point2D.Double(this.actualSpeed.getX(), 0);
+        }
+        if (yShift != 0) {
+            this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY());
+        }
+
+        this.position = new Point2D.Double(
+                this.position.getX() + xShift,
+                this.position.getY() + yShift
+        );
     }
 
     private boolean checkCollision(FieldTile locationTile) {

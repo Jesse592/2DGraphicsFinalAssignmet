@@ -74,6 +74,15 @@ public class FieldGrid {
         return null;
     }
 
+    public void clearTransversable(){
+        for (FieldTile[] tilesY : this.tiles) {
+            for (FieldTile tile : tilesY) {
+                tile.setTransversable(true);
+            }
+        }
+        reBuild();
+    }
+
     private void clearField() {
         for (FieldTile[] tilesY : this.tiles) {
             for (FieldTile tile : tilesY) {

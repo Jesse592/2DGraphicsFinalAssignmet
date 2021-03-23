@@ -35,7 +35,7 @@ public class MainGUI extends Application {
 
     public void init() {
         this.mainPane = new BorderPane();
-        this.fieldGrid = new FieldGrid(100,60, 20, 20);
+        this.fieldGrid = new FieldGrid(67,50, 20, 20);
 
         this.canvasGUI = new CanvasGUI(this.fieldGrid);
         this.buildPanel = new BuildPanel(this.fieldGrid, this.canvasGUI);

@@ -47,6 +47,8 @@ public class BuildPanel {
         TextField tileHeightField = new TextField(Integer.toString(this.fieldGrid.getTileHeight()));
 
         Button applyButton = new Button("Apply");
+
+        Button clearButton =  new Button("Clear field");
         applyButton.setOnMouseClicked(e ->{
             try {
                 this.fieldGrid.setWidth(Integer.parseInt(widthField.getText()));
@@ -60,13 +62,16 @@ public class BuildPanel {
             }
         });
 
+        clearButton.setOnMouseClicked(e -> this.fieldGrid.clearTransversable());
+
         this.mainPane.getChildren().addAll(
                 label, new Label(),
                 widthLabel, widthField, new Label(),
                 heightLabel, heightField, new Label(),
                 tileWidthLabel, tileWidthField, new Label(),
                 tileHeightLabel, tileHeightField, new Label(),
-                applyButton,
+                applyButton, new Label(),
+                clearButton,
                 new Separator()
         );
 

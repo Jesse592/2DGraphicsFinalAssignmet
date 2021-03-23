@@ -7,8 +7,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import javax.swing.colorchooser.ColorSelectionModel;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ParticlePanel {
@@ -17,6 +23,8 @@ public class ParticlePanel {
 
     private CanvasGUI canvasGUI;
     private VBox mainPane;
+
+    private BufferedImage image;
 
     public ParticlePanel(ParticleManager particleManager, CanvasGUI canvasGUI) {
         this.canvasGUI = canvasGUI;
@@ -74,6 +82,11 @@ public class ParticlePanel {
         maxAccel.getChildren().addAll(maxAccelLabel, maxAccelField);
         accelHBox.getChildren().addAll(maxAccel, minAccel);
 
+        Label imageLabel = new Label("Select image");
+        Button imageButton = new Button("Select");
+
+        imageButton.setOnMouseClicked(e -> this.image = getImage());
+
         Button applyButton = new Button("Apply");
         applyButton.setOnMouseClicked(e ->{
             try {
@@ -92,6 +105,8 @@ public class ParticlePanel {
 
                 this.particleManager.setOpacity(opacitySlider.getValue() / 100);
 
+                this.particleManager.setImage(this.image);
+
                 this.particleManager.applyParticles();
             } catch (Exception q) {
                 q.printStackTrace();
@@ -106,9 +121,21 @@ public class ParticlePanel {
                 speedHBox, new Label(),
                 accelHBox, new Label(),
                 opacityLabel, opacitySlider, new Label(),
+                imageLabel, imageButton, new Label(),
                 applyButton
         );
 
+    }
+
+    private BufferedImage getImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
+        try {
+            return ImageIO.read(new File(fileChooser.showOpenDialog(new Stage()).getAbsolutePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public VBox getMainPane() {

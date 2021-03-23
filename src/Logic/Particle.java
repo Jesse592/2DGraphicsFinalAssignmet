@@ -2,12 +2,14 @@ package Logic;
 
 import org.jfree.fx.FXGraphics2D;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Particle {
@@ -66,24 +68,24 @@ public class Particle {
         } else {
             this.direction = new Point2D.Double(0, 0);
         }
-        this.image = null;
     }
 
     public void draw(FXGraphics2D g2d) {
         Shape shape = new Ellipse2D.Double(this.position.getX() - this.radius, this.position.getY() - this.radius, this.radius * 2f, this.radius * 2f);
 
-        g2d.setPaint(this.color);
+        g2d.setColor(this.color);
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) this.opacity));
         g2d.fill(shape);
 
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
         if (this.image != null) {
             AffineTransform tx = new AffineTransform();
-            tx.translate(this.radius * 2, this.radius * 2);
+            tx.translate(this.position.getX() - this.radius, this.position.getY() - this.radius);
             g2d.drawImage(this.image, tx, null);
         }
 
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+
 
     }
 
@@ -135,26 +137,48 @@ public class Particle {
             if (xDirection < 0) {
                 //Right side
                 double penetrationDistance = (this.currentTile.getCentre().getX() + (this.fieldGrid.getTileWidth() / 2f)) - this.position.getX();
-                xShift = penetrationDistance + 0.1;
-                this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() + (this.targetSpeed / 20f));
+                xShift = penetrationDistance + 1;
+
+                if(this.actualSpeed.getY() > 0) {
+                    this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() + (this.targetSpeed / 20f));
+                } else {
+                    this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() - (this.targetSpeed / 20f));
+                }
+
             } else if (xDirection > 0) {
                 //Left side
                 double penetrationDistance = this.position.getX() - (this.currentTile.getCentre().getX() - (this.fieldGrid.getTileWidth() / 2f));
-                xShift = -(penetrationDistance + 0.1);
-                this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() + (this.targetSpeed / 20f));
+                xShift = -(penetrationDistance + 1);
+                if(this.actualSpeed.getY() > 0) {
+                    this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() + (this.targetSpeed / 20f));
+                } else {
+                    this.actualSpeed = new Point2D.Double(0, this.actualSpeed.getY() - (this.targetSpeed / 20f));
+                }
             }
 
             //Collision with up / down side of tile
             if (yDirection > 0) {
                 //Up side
                 double penetrationDistance = this.position.getY() - (this.currentTile.getCentre().getY() - (this.fieldGrid.getTileHeight() / 2f));
-                yShift = -(penetrationDistance + 0.1);
-                this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + (this.targetSpeed / 20f), 0);
+                yShift = -(penetrationDistance + 1);
+
+                if(this.actualSpeed.getX() > 0) {
+                    this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() - (this.targetSpeed / 20f), 0);
+                } else {
+                    this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + (this.targetSpeed / 20f), 0);
+                }
+
             } else if (yDirection < 0){
                 //Down Side
                 double penetrationDistance = (this.currentTile.getCentre().getY() + (this.fieldGrid.getTileHeight() / 2f)) - this.position.getY();
-                yShift = penetrationDistance + 0.1;
-                this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + (this.targetSpeed / 20f), 0);
+                yShift = penetrationDistance + 1;
+
+                if(this.actualSpeed.getX() > 0) {
+                    this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() - (this.targetSpeed / 20f), 0);
+                } else {
+                    this.actualSpeed = new Point2D.Double(this.actualSpeed.getX() + (this.targetSpeed / 20f), 0);
+                }
+
             }
 
 

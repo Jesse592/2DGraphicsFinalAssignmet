@@ -5,9 +5,11 @@ import Logic.FieldTile;
 import Logic.Particle;
 import org.jfree.fx.FXGraphics2D;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ParticleManager {
@@ -41,15 +43,21 @@ public class ParticleManager {
         this.maxAcceleration = 10;
 
         this.color = Color.black;
-        this.image = null;
 
+        try {
+            this.image = ImageIO.read(getClass().getResourceAsStream("/Images/Particle1.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.image = null;
     }
 
 
     private void buildParticles(int size) {
         this.particles = new ArrayList<>(size);
+
         for (int i = 0; i < size; i++) {
-            Particle particle = new Particle(this.fieldGrid, new Point2D.Double(Math.random()*500+100, Math.random()*500+100), 10);
+            Particle particle = new Particle(this.fieldGrid, new Point2D.Double(Math.random()*500+100, Math.random()*500+100), this.radius, (int)(this.minSpeed + (Math.random() * (this.maxSpeed - this.minSpeed))), this.color);
             this.particles.add(particle);
         }
 
